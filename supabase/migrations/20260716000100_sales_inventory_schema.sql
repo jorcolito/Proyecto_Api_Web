@@ -103,6 +103,22 @@ create index historial_inventario_id_producto_idx
 create index historial_inventario_id_usuario_idx
     on public.historial_inventario(id_usuario);
 
+create or replace function public.ventas_total_consistencia()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+    new.total := (new.subtotal + new.impuestos)::numeric(12,2);
+    return new;
+end;
+$$;
+
+create trigger ventas_total_consistencia_trg
+before insert or update of subtotal, impuestos on public.ventas
+for each row
+execute function public.ventas_total_consistencia();
+
 create or replace function public.recalcular_totales_venta(p_id_venta bigint)
 returns public.ventas
 language plpgsql
@@ -112,9 +128,13 @@ declare
     v_subtotal numeric(12,2);
     v_venta public.ventas%rowtype;
 begin
-    if not exists (
-        select 1 from public.ventas where id_venta = p_id_venta
-    ) then
+    select *
+    into v_venta
+    from public.ventas
+    where id_venta = p_id_venta
+    for update;
+
+    if not found then
         raise exception 'Venta no encontrada' using errcode = 'P0002';
     end if;
 

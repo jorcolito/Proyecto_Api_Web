@@ -7,7 +7,7 @@ EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
 
 class ClienteCreate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     identificacion: str = Field(min_length=5, max_length=30)
     nombre: str = Field(min_length=1, max_length=100)
@@ -17,7 +17,7 @@ class ClienteCreate(BaseModel):
 
 
 class ClienteUpdate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     identificacion: Optional[str] = Field(default=None, min_length=5, max_length=30)
     nombre: Optional[str] = Field(default=None, min_length=1, max_length=100)

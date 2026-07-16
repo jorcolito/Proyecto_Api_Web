@@ -3,7 +3,7 @@ from supabase import Client
 
 from app.database import get_supabase
 from app.models.cliente import ClienteCreate, ClienteUpdate
-from app.services import execute_query, require_one
+from app.services import execute_query, reject_null_fields, require_one, response_row
 
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
@@ -15,7 +15,7 @@ def crear_cliente(cliente: ClienteCreate, client: Client = Depends(get_supabase)
         client.table("clientes").insert(cliente.model_dump(mode="json")),
         "al crear el cliente",
     )
-    return {"mensaje": "Cliente creado correctamente", "cliente": response.data[0]}
+    return {"mensaje": "Cliente creado correctamente", "cliente": response_row(response, "el cliente")}
 
 
 @router.get("")
@@ -41,6 +41,7 @@ def actualizar_cliente(
 ):
     existing = require_one(client, "clientes", "id_cliente", id_cliente, "Cliente")
     data = cliente.model_dump(mode="json", exclude_unset=True)
+    reject_null_fields(data, {"identificacion", "nombre", "apellido", "email"})
     if not data:
         return {"mensaje": "Cliente sin cambios", "cliente": existing}
     response = execute_query(
@@ -49,7 +50,7 @@ def actualizar_cliente(
     )
     return {
         "mensaje": "Cliente actualizado correctamente",
-        "cliente": response.data[0],
+        "cliente": response_row(response, "el cliente"),
     }
 
 
@@ -69,4 +70,4 @@ def eliminar_cliente(id_cliente: int, client: Client = Depends(get_supabase)):
         client.table("clientes").delete().eq("id_cliente", id_cliente),
         "al eliminar el cliente",
     )
-    return {"mensaje": "Cliente eliminado correctamente", "cliente": response.data[0]}
+    return {"mensaje": "Cliente eliminado correctamente", "cliente": response_row(response, "el cliente")}

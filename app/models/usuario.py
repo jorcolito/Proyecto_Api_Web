@@ -10,7 +10,7 @@ class RolUsuario(str, Enum):
 
 
 class UsuarioCreate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     username: str = Field(
         min_length=3,
@@ -24,7 +24,7 @@ class UsuarioCreate(BaseModel):
 
 
 class UsuarioUpdate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     username: Optional[str] = Field(
         default=None,

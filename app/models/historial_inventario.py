@@ -9,7 +9,7 @@ class TipoMovimiento(str, Enum):
 
 
 class MovimientoInventarioCreate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     id_producto: int = Field(gt=0)
     id_usuario: int = Field(gt=0)

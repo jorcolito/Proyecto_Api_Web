@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class ProductoCreate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     codigo_barras: str = Field(min_length=1, max_length=100)
     nombre: str = Field(min_length=1, max_length=150)

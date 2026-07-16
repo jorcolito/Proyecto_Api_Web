@@ -1,10 +1,12 @@
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class DetalleVentaCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     id_venta: int = Field(gt=0)
     id_producto: int = Field(gt=0)
     cantidad: int = Field(gt=0)
@@ -17,6 +19,8 @@ class DetalleVentaCreate(BaseModel):
 
 
 class DetalleVentaUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     cantidad: Optional[int] = Field(default=None, gt=0)
     descuento: Optional[Decimal] = Field(
         default=None,

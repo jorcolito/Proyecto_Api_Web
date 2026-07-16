@@ -5,7 +5,13 @@ from supabase import Client
 
 from app.database import get_supabase
 from app.models.venta import VentaCreate, VentaUpdate
-from app.services import execute_query, require_active_user, require_one
+from app.services import (
+    execute_query,
+    reject_null_fields,
+    require_active_user,
+    require_one,
+    response_row,
+)
 
 
 router = APIRouter(prefix="/ventas", tags=["Ventas"])
@@ -31,7 +37,7 @@ def crear_venta(venta: VentaCreate, client: Client = Depends(get_supabase)):
         client.table("ventas").insert(data),
         "al crear la venta",
     )
-    return {"mensaje": "Venta creada correctamente", "venta": response.data[0]}
+    return {"mensaje": "Venta creada correctamente", "venta": response_row(response, "la venta")}
 
 
 @router.get("")
@@ -65,6 +71,7 @@ def actualizar_venta(
 ):
     existing = require_one(client, "ventas", "id_venta", id_venta, "Venta")
     data = venta.model_dump(mode="json", exclude_unset=True)
+    reject_null_fields(data, {"id_cliente", "id_usuario", "impuestos"})
     if venta.id_cliente is not None:
         require_one(client, "clientes", "id_cliente", venta.id_cliente, "Cliente")
     if venta.id_usuario is not None:
@@ -80,7 +87,7 @@ def actualizar_venta(
         client.table("ventas").update(data).eq("id_venta", id_venta),
         "al actualizar la venta",
     )
-    return {"mensaje": "Venta actualizada correctamente", "venta": response.data[0]}
+    return {"mensaje": "Venta actualizada correctamente", "venta": response_row(response, "la venta")}
 
 
 @router.delete("/{id_venta}")
@@ -102,4 +109,4 @@ def eliminar_venta(id_venta: int, client: Client = Depends(get_supabase)):
         client.table("ventas").delete().eq("id_venta", id_venta),
         "al eliminar la venta",
     )
-    return {"mensaje": "Venta eliminada correctamente", "venta": response.data[0]}
+    return {"mensaje": "Venta eliminada correctamente", "venta": response_row(response, "la venta")}

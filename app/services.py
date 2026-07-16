@@ -44,6 +44,10 @@ def require_active_user(client: Any, id_usuario: int) -> Dict[str, Any]:
 
 
 def rpc_row(response: Any, label: str) -> Dict[str, Any]:
+    return response_row(response, label)
+
+
+def response_row(response: Any, label: str) -> Dict[str, Any]:
     data = response.data
     if isinstance(data, list) and data:
         return data[0]
@@ -53,3 +57,15 @@ def rpc_row(response: Any, label: str) -> Dict[str, Any]:
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail=f"Respuesta invalida al procesar {label}",
     )
+
+
+def reject_null_fields(
+    data: Dict[str, Any],
+    fields: set[str],
+) -> None:
+    for field in fields:
+        if field in data and data[field] is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"El campo {field} no puede ser nulo",
+            )

@@ -1,10 +1,12 @@
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class VentaCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     id_cliente: int = Field(gt=0)
     id_usuario: int = Field(gt=0)
     impuestos: Decimal = Field(
@@ -16,6 +18,8 @@ class VentaCreate(BaseModel):
 
 
 class VentaUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     id_cliente: Optional[int] = Field(default=None, gt=0)
     id_usuario: Optional[int] = Field(default=None, gt=0)
     impuestos: Optional[Decimal] = Field(

@@ -45,7 +45,3 @@ def test_supabase(client: Client = Depends(get_supabase)):
         "mensaje": "Conexion exitosa a Supabase",
         "datos": response.data,
     }
-
-
-# Keep pytest from treating the route handler imported by contract tests as a test.
-test_supabase.__test__ = False

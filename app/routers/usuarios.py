@@ -6,7 +6,7 @@ from supabase import Client
 from app.database import get_supabase
 from app.models.usuario import UsuarioCreate, UsuarioUpdate
 from app.security import hash_password
-from app.services import execute_query, require_one
+from app.services import execute_query, reject_null_fields, require_one, response_row
 
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
@@ -30,7 +30,7 @@ def crear_usuario(
     )
     return {
         "mensaje": "Usuario creado correctamente",
-        "usuario": public_user(response.data[0]),
+        "usuario": public_user(response_row(response, "el usuario")),
     }
 
 
@@ -57,6 +57,7 @@ def actualizar_usuario(
 ):
     existing = require_one(client, "usuarios", "id_usuario", id_usuario, "Usuario")
     data = usuario.model_dump(mode="json", exclude_unset=True, exclude={"password"})
+    reject_null_fields(data, {"username", "nombre", "rol", "activo"})
     if usuario.password is not None:
         data["password_hash"] = hash_password(usuario.password)
     if not data:
@@ -67,7 +68,7 @@ def actualizar_usuario(
     )
     return {
         "mensaje": "Usuario actualizado correctamente",
-        "usuario": public_user(response.data[0]),
+        "usuario": public_user(response_row(response, "el usuario")),
     }
 
 
@@ -80,5 +81,5 @@ def eliminar_usuario(id_usuario: int, client: Client = Depends(get_supabase)):
     )
     return {
         "mensaje": "Usuario desactivado correctamente",
-        "usuario": public_user(response.data[0]),
+        "usuario": public_user(response_row(response, "el usuario")),
     }
