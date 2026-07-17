@@ -11,7 +11,8 @@ def execute_query(query: Any, action: str) -> Any:
     except HTTPException:
         raise
     except Exception as error:
-        raise supabase_http_exception(error, action) from error
+        print("ERROR REAL DE SUPABASE:", repr(error))
+        raise
 
 
 def require_one(
