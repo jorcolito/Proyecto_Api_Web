@@ -1,2 +1,8 @@
+[project]
+name = "proyecto-api-web"
+version = "0.1.0"
+description = "API para gestión de ventas e inventario"
+requires-python = "==3.13.*"
+
 [tool.fastapi]
 entrypoint = "app.main:app"
