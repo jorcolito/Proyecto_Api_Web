@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from app.database import get_supabase
 from app.main import app
+from main import app as root_app
 
 
 class AppStartupTests(unittest.TestCase):
@@ -26,6 +27,9 @@ class AppStartupTests(unittest.TestCase):
             response.json(),
             {"message": "API funcionando correctamente"},
         )
+
+    def test_cloud_entrypoint_exports_the_same_app(self) -> None:
+        self.assertIs(root_app, app)
 
     def test_missing_supabase_variables_do_not_break_app_startup(self) -> None:
         get_supabase.cache_clear()

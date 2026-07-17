@@ -18,4 +18,4 @@ include = ["app*"]
 exclude = ["supabase*"]
 
 [tool.fastapi]
-entrypoint = "app.main:app"
+entrypoint = "main:app"
